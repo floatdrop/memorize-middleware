@@ -27,7 +27,11 @@ module.exports = function (options, middleware) {
         cached = {};
         middleware(cached, undefined, function (err) {
             if (err) { return next(err); }
-            setTimeout(function () { cached = null; }, options.updateInterval);
+
+            if (options.updateInterval > 0) {
+                setTimeout(function () { cached = null; }, options.updateInterval);
+            }
+
             assign(req, cached);
             next();
         });
