@@ -26,7 +26,7 @@ app.listen(8080);
 
 ## API
 
-### memorize(middleware, [options])
+### memorize([options], middleware)
 
 Creates middleware, that will call `middleware` and cache changes, that it did to req object.
 
@@ -34,6 +34,14 @@ Creates middleware, that will call `middleware` and cache changes, that it did t
 Type: `Function`
 
 Middleware, which changes should be cached.
+
+#### options
+
+##### updateInterval
+Type: `Number`  
+Default: `0` — never
+
+How often (in milliseconds) should `memorize` forget cached changes. Don't make it too low.
 
 ## License
 

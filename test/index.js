@@ -35,3 +35,19 @@ it('should cache changes and apply them', function () {
 
     req.should.have.property('boop', true);
 });
+
+it('should clear cache on updateInterval', function (done) {
+    var calls = 0;
+
+    var cached = memorize({ updateInterval: 10 }, function (req, res, next) {
+        calls ++;
+        next();
+    });
+
+    cached({});
+    setTimeout(function () {
+        cached({});
+        calls.should.eql(2);
+        done();
+    }, 20);
+});
