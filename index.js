@@ -1,5 +1,7 @@
 function nop() {}
 
+var assign = require('object-assign');
+
 module.exports = function (middleware, options) {
     options = options || {};
 
@@ -7,9 +9,20 @@ module.exports = function (middleware, options) {
         throw new Error('middleware should be a function, not an ' + typeof middleware);
     }
 
+    var cached;
+
     return function memorize(req, res, next) {
         next = next || nop;
 
-        next();
+        if (cached) {
+            assign(req, cached);
+            return next();
+        }
+
+        cached = {};
+        middleware(cached, undefined, function () {
+            assign(req, cached);
+            next();
+        });
     };
 };
