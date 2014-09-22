@@ -1,0 +1,28 @@
+{
+  "name": "memorize-middleware",
+  "version": "0.0.0",
+  "description": "Cache req changes and apply them later",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/floatdrop/memorize-middleware.git"
+  },
+  "keywords": [
+    "express",
+    "memorize",
+    "middleware"
+  ],
+  "author": "Vsevolod Strukchinsky <floatdrop@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/floatdrop/memorize-middleware/issues"
+  },
+  "homepage": "https://github.com/floatdrop/memorize-middleware",
+  "devDependencies": {
+    "mocha": "^1.21.4",
+    "should": "^4.0.4"
+  }
+}

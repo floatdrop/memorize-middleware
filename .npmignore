@@ -1,0 +1,11 @@
+img
+test
+.travis.yml
+.editorconfig
+.jshintrc
+benchmark
+profile
+*.log
+*.trace
+hydrogen.cfg
+tracegl.js
