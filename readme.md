@@ -47,7 +47,7 @@ If enabled, middleware will be executed on startup, instead of be executed on fi
 Type: `Number`  
 Default: `0` — never
 
-How often (in milliseconds) should `memorize` forget cached changes. Don't make it too low.
+How often (in milliseconds) should `memorize` request new data for middleware. Don't make it too low.
 
 ## License
 
