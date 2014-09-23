@@ -38,6 +38,12 @@ module.exports = function (options, middleware) {
     return function memorize(req, res, next) {
         next = next || nop;
 
+        if (options.breakOnError) {
+            cache.once('error', function (err) {
+                return next(err);
+            });
+        }
+
         after(cache, 'ready', function (data) {
             assign(req, data);
             return next();

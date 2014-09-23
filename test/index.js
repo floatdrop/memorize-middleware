@@ -55,3 +55,11 @@ it('should clear cache on updateInterval', function (done) {
 it('should call middleware right after init with hotStart', function (done) {
     memorize({ hotStart: true }, function () { done(); });
 });
+
+it('should pass error with breakOnError', function (done) {
+    var cached = memorize({ breakOnError: true }, function (req, res, next) { next(new Error('Oh noez!')); });
+    cached({}, {}, function (err) {
+        if (!err) { return done('Error was not passed to callback'); }
+        done();
+    });
+});
