@@ -51,3 +51,7 @@ it('should clear cache on updateInterval', function (done) {
         done();
     }, 20);
 });
+
+it('should call middleware right after init with hotStart', function (done) {
+    memorize({ hotStart: true }, function () { done(); });
+});

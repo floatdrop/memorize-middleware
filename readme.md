@@ -37,6 +37,12 @@ Middleware, which changes should be cached.
 
 #### options
 
+##### hotStart
+Type: `Boolean`  
+Default: `false`
+
+If enabled, middleware will be executed on startup, instead of be executed on first request.
+
 ##### updateInterval
 Type: `Number`  
 Default: `0` — never
