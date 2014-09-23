@@ -28,7 +28,7 @@ module.exports = function (options, middleware) {
             }
 
             updating = false;
-            if (err) { return cache.emit('error', err); }
+            if (err && options.breakOnError) { return cache.emit('error', err); }
             cache.emit('ready', req);
         });
     }

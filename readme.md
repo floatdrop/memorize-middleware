@@ -54,6 +54,7 @@ Type: `Boolean`
 Default: `false`
 
 Should client be notified (`next` callback called) when error is occured, while updating cache.
+Otherwise errors will be ignored and `memorize` will try to update cache again.
 
 ## License
 
