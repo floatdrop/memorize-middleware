@@ -49,6 +49,12 @@ Default: `0` — never
 
 How often (in milliseconds) should `memorize` request new data for middleware. Don't make it too low.
 
+##### breakOnError
+Type: `Boolean`  
+Default: `false`
+
+Should client be notified (`next` callback called) when error is occured, while updating cache.
+
 ## License
 
 The MIT License (MIT) © [Vsevolod Strukchinsky](floatdrop@gmail.com)
