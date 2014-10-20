@@ -19,6 +19,8 @@ module.exports = function (options, middleware) {
 
     var updating = false;
     function updateCache() {
+        if (updating) { return; }
+
         var req = {};
         updating = true;
 
