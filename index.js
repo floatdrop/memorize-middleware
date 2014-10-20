@@ -1,7 +1,6 @@
 function nop() {}
 
 var assign  = require('object-assign'),
-    after   = require('after-event'),
     events  = require('events');
 
 module.exports = function (options, middleware) {
@@ -31,10 +30,7 @@ module.exports = function (options, middleware) {
             updating = false;
             if (err && options.breakOnError) { return cache.emit('error', err); }
 
-            if (cache._after) {
-                cache._after.ready = req;
-            }
-
+            cache.result = req;
             cache.emit('ready', req);
         });
     }
@@ -50,12 +46,17 @@ module.exports = function (options, middleware) {
             });
         }
 
-        after(cache, 'ready', function (data) {
+        if (cache.result) {
+            assign(req, cache.result);
+            return next();
+        }
+
+        cache.on('ready', function (data) {
             assign(req, data);
             return next();
         });
 
-        if (!updating && !cache._after.ready) {
+        if (!options.hotStart) {
             updateCache();
         }
     };
