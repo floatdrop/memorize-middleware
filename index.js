@@ -22,6 +22,7 @@ module.exports = function (options, middleware) {
     function updateCache() {
         var req = {};
         updating = true;
+
         middleware(req, undefined, function (err) {
             if (options.updateInterval > 0) {
                 setTimeout(updateCache, options.updateInterval);
@@ -29,6 +30,11 @@ module.exports = function (options, middleware) {
 
             updating = false;
             if (err && options.breakOnError) { return cache.emit('error', err); }
+
+            if (cache._after) {
+                cache._after.ready = req;
+            }
+
             cache.emit('ready', req);
         });
     }
