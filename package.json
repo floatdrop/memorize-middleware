@@ -26,7 +26,6 @@
     "should": "^4.0.4"
   },
   "dependencies": {
-    "after-event": "^0.1.0",
-    "object-assign": "^1.0.0"
+    "object-assign": "^2.0.0"
   }
 }
