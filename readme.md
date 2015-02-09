@@ -14,6 +14,7 @@ var memorize = require('memorize-middleware');
 var middleware = function (req, res, next) {
     console.log('Called once');
     req.message = 'Boop!';
+    next();
 };
 
 app.use(memorize(middleware));
