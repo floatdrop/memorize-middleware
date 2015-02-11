@@ -53,7 +53,7 @@ module.exports = function (options, middleware) {
             return next();
         }
 
-        cache.on('ready', function (data) {
+        cache.once('ready', function (data) {
             assign(req, data);
             return next();
         });
