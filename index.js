@@ -42,11 +42,15 @@ module.exports = function (options, middleware) {
     return function memorize(req, res, next) {
         next = next || nop;
 
-        if (options.breakOnError) {
-            cache.once('error', function (err) {
+        cache.once('error', function (err) {
+            if (options.breakOnError) {
                 return next(err);
-            });
-        }
+            }
+
+            if (cache.result === undefined) {
+                updateCache();
+            }
+        });
 
         if (cache.result) {
             assign(req, cache.result);
