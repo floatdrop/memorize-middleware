@@ -10,6 +10,7 @@ module.exports = function (options, middleware) {
     }
 
     options = options || {};
+    options.retryInterval = options.retryInterval || 5000;
 
     if (typeof middleware !== 'function') {
         throw new Error('middleware should be a function, not an ' + typeof middleware);
@@ -25,6 +26,11 @@ module.exports = function (options, middleware) {
         updating = true;
 
         middleware(req, undefined, function (err) {
+            if (!options.breakOnError && err && cache.result === undefined && options.retryInterval) {
+                setTimeout(updateCache, options.retryInterval);
+                return;
+            }
+
             if (options.updateInterval > 0) {
                 setTimeout(updateCache, options.updateInterval);
             }
@@ -42,15 +48,11 @@ module.exports = function (options, middleware) {
     return function memorize(req, res, next) {
         next = next || nop;
 
-        cache.once('error', function (err) {
-            if (options.breakOnError) {
+        if (options.breakOnError) {
+            cache.once('error', function (err) {
                 return next(err);
-            }
-
-            if (cache.result === undefined) {
-                updateCache();
-            }
-        });
+            });
+        }
 
         if (cache.result) {
             assign(req, cache.result);

@@ -50,6 +50,12 @@ Default: `0` — never
 
 How often (in milliseconds) should `memorize` request new data for middleware. Don't make it too low.
 
+##### updateInterval
+Type: `Number`  
+Default: `5000`
+
+How soon (in milliseconds) should `memorize` retry request, if no data available yet. Don't make it too low.
+
 ##### breakOnError
 Type: `Boolean`  
 Default: `false`
