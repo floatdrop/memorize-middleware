@@ -17,6 +17,7 @@ module.exports = function (options, middleware) {
     }
 
     var cache = new events.EventEmitter();
+    cache.setMaxListeners(0);
 
     var updating = false;
     function updateCache() {
@@ -36,7 +37,7 @@ module.exports = function (options, middleware) {
             }
 
             updating = false;
-            if (err && options.breakOnError) { return cache.emit('error', err); }
+            if (err && options.breakOnError) { return cache.emit('updateError', err); }
 
             cache.result = req;
             cache.emit('ready', req);
@@ -49,9 +50,7 @@ module.exports = function (options, middleware) {
         next = next || nop;
 
         if (options.breakOnError) {
-            cache.once('error', function (err) {
-                return next(err);
-            });
+            cache.once('updateError', next);
         }
 
         if (cache.result) {
