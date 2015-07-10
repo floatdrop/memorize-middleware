@@ -63,3 +63,26 @@ it('should pass error with breakOnError', function (done) {
         done();
     });
 });
+
+it('should not raise warning when 10+ listeners are set', function (done) {
+    var cached = memorize(function (req, res, next) {
+        setTimeout(function () {
+            req.boop = true;
+            next();
+
+            done();
+        }, 10);
+    });
+
+    for (var i = 0; i < 20; i++) {
+        cached({});
+    }
+});
+
+it('should not fail when error is emitted without listener', function (done) {
+    var cached = memorize({ updateInterval: 10, hotStart: true, breakOnError: true }, function (req, res, next) {
+        next(new Error('oh my...'));
+    });
+
+    setTimeout(done, 20);
+});
