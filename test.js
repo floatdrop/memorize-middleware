@@ -49,7 +49,7 @@ it('should clear cache on updateInterval', function (done) {
 		calls++;
 		next();
 	}, {
-		updateInterval: 10
+		updateInterval: 100
 	});
 
 	cached({});
@@ -57,7 +57,7 @@ it('should clear cache on updateInterval', function (done) {
 		cached({});
 		assert.equal(calls, 2);
 		done();
-	}, 20);
+	}, 150);
 });
 
 it('should pass error', function (done) {
