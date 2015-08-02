@@ -1,70 +1,80 @@
+'use strict';
+
 function nop() {}
 
-var assign  = require('object-assign'),
-    events  = require('events');
+var assign = require('object-assign');
+var events = require('events');
 
 module.exports = function (options, middleware) {
-    if (typeof options === 'function') {
-        middleware = options;
-        options = {};
-    }
+	if (typeof options === 'function') {
+		middleware = options;
+		options = {};
+	}
 
-    options = options || {};
-    options.retryInterval = options.retryInterval || 5000;
+	options = options || {};
+	options.retryInterval = options.retryInterval || 5000;
 
-    if (typeof middleware !== 'function') {
-        throw new Error('middleware should be a function, not an ' + typeof middleware);
-    }
+	if (typeof middleware !== 'function') {
+		throw new Error('middleware should be a function, not an ' + typeof middleware);
+	}
 
-    var cache = new events.EventEmitter();
-    cache.setMaxListeners(0);
+	var cache = new events.EventEmitter();
+	cache.setMaxListeners(0);
 
-    var updating = false;
-    function updateCache() {
-        if (updating) { return; }
+	var updating = false;
 
-        var req = {};
-        updating = true;
+	function updateCache() {
+		if (updating) {
+			return;
+		}
 
-        middleware(req, undefined, function (err) {
-            if (!options.breakOnError && err && cache.result === undefined && options.retryInterval) {
-                setTimeout(updateCache, options.retryInterval);
-                return;
-            }
+		var req = {};
+		updating = true;
 
-            if (options.updateInterval > 0) {
-                setTimeout(updateCache, options.updateInterval);
-            }
+		middleware(req, undefined, function (err) {
+			if (!options.breakOnError && err && cache.result === undefined && options.retryInterval) {
+				setTimeout(updateCache, options.retryInterval);
+				return;
+			}
 
-            updating = false;
-            if (err && options.breakOnError) { return cache.emit('updateError', err); }
+			if (options.updateInterval > 0) {
+				setTimeout(updateCache, options.updateInterval);
+			}
 
-            cache.result = req;
-            cache.emit('ready', req);
-        });
-    }
+			updating = false;
+			if (err && options.breakOnError) {
+				cache.emit('updateError', err);
+				return;
+			}
 
-    if (options.hotStart) { updateCache(); }
+			cache.result = req;
+			cache.emit('ready', req);
+		});
+	}
 
-    return function memorize(req, res, next) {
-        next = next || nop;
+	if (options.hotStart) {
+		updateCache();
+	}
 
-        if (options.breakOnError) {
-            cache.once('updateError', next);
-        }
+	return function memorize(req, res, next) {
+		next = next || nop;
 
-        if (cache.result) {
-            assign(req, cache.result);
-            return next();
-        }
+		if (options.breakOnError) {
+			cache.once('updateError', next);
+		}
 
-        cache.once('ready', function (data) {
-            assign(req, data);
-            return next();
-        });
+		if (cache.result) {
+			assign(req, cache.result);
+			return next();
+		}
 
-        if (!options.hotStart) {
-            updateCache();
-        }
-    };
+		cache.once('ready', function (data) {
+			assign(req, data);
+			return next();
+		});
+
+		if (!options.hotStart) {
+			updateCache();
+		}
+	};
 };
