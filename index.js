@@ -3,78 +3,59 @@
 function nop() {}
 
 var assign = require('object-assign');
-var events = require('events');
+var PinkiePromise = require('pinkie-promise');
 
-module.exports = function (options, middleware) {
-	if (typeof options === 'function') {
-		middleware = options;
-		options = {};
-	}
-
-	options = options || {};
-	options.retryInterval = options.retryInterval || 5000;
-
+module.exports = function (middleware, opts) {
 	if (typeof middleware !== 'function') {
 		throw new Error('middleware should be a function, not an ' + typeof middleware);
 	}
 
-	var cache = new events.EventEmitter();
-	cache.setMaxListeners(0);
+	opts = opts || {};
 
-	var updating = false;
+	var updateInterval = opts.updateInterval;
 
-	function updateCache() {
-		if (updating) {
-			return;
-		}
+	var middlewarePromise = function () {
+		return new PinkiePromise(function (resolve, reject) {
+			var req = {};
 
-		var req = {};
-		updating = true;
+			middleware(req, {}, function (err) {
+				if (err) {
+					reject(err);
+					return;
+				}
 
-		middleware(req, undefined, function (err) {
-			if (!options.breakOnError && err && cache.result === undefined && options.retryInterval) {
-				setTimeout(updateCache, options.retryInterval);
-				return;
-			}
-
-			if (options.updateInterval > 0) {
-				setTimeout(updateCache, options.updateInterval);
-			}
-
-			updating = false;
-			if (err && options.breakOnError) {
-				cache.emit('updateError', err);
-				return;
-			}
-
-			cache.result = req;
-			cache.emit('ready', req);
+				resolve(req);
+			});
 		});
+	};
+
+	function setupUpdate() {
+		if (updateInterval) {
+			setTimeout(updateLoop, updateInterval);
+		}
 	}
 
-	if (options.hotStart) {
-		updateCache();
+	var cache = middlewarePromise();
+
+	function updateLoop() {
+		var promise = middlewarePromise();
+		promise
+			.then(function () {
+				cache = promise;
+				setupUpdate();
+			}, setupUpdate);
 	}
+
+	setupUpdate();
 
 	return function memorize(req, res, next) {
 		next = next || nop;
 
-		if (options.breakOnError) {
-			cache.once('updateError', next);
-		}
-
-		if (cache.result) {
-			assign(req, cache.result);
-			return next();
-		}
-
-		cache.once('ready', function (data) {
-			assign(req, data);
-			return next();
-		});
-
-		if (!options.hotStart) {
-			updateCache();
-		}
+		cache
+			.then(function (data) {
+				assign(req, data);
+				return next();
+			})
+			.catch(next);
 	};
 };

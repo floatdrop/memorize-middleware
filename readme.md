@@ -1,6 +1,4 @@
-# memorize-middleware
-
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
+# memorize-middleware [![Build Status][travis-image]][travis-url]
 
 > Save changes, that middleware did on req and apply them after
 
@@ -25,9 +23,22 @@ app.get('/', function (req, res, next) {
 app.listen(8080);
 ```
 
+### States
+
+There are couple states in which `memorize` works:
+
+1. __No cache__ - all requests will be halted, while result is pending.
+2. __Middleware failed and there is no cached value__ - Error will be passed to next middleware.
+3. __Result recieved__ - It will be stored, all pending clients will get result, all next clients will get this result instantly. If `updateInterval` set - it will be scheduled.
+
+If `updateInterval` is set:
+
+1. __Middleware failed in update time__ - Nothing will happen, all clients will recieve previous version, new update will be scheduled.
+2. __Result recieved in update time__ - Previous result will be swapped with new one.
+
 ## API
 
-### memorize([options], middleware)
+### memorize(middleware, [options])
 
 Creates middleware, that will call `middleware` and cache changes, that it did to req object.
 
@@ -38,40 +49,15 @@ Middleware, which changes should be cached.
 
 #### options
 
-##### hotStart
-Type: `Boolean`  
-Default: `false`
-
-If enabled, middleware will be executed on startup, instead of be executed on first request.
-
 ##### updateInterval
 Type: `Number`  
 Default: `0` — never
 
 How often (in milliseconds) should `memorize` request new data for middleware. Don't make it too low.
 
-##### updateInterval
-Type: `Number`  
-Default: `5000`
-
-How soon (in milliseconds) should `memorize` retry request, if no data available yet. Don't make it too low.
-
-##### breakOnError
-Type: `Boolean`  
-Default: `false`
-
-Should client be notified (`next` callback called) when error is occured, while updating cache.
-Otherwise errors will be ignored and `memorize` will try to update cache again.
-
 ## License
 
 The MIT License (MIT) © [Vsevolod Strukchinsky](floatdrop@gmail.com)
 
-[npm-url]: https://npmjs.org/package/memorize-middleware
-[npm-image]: http://img.shields.io/npm/v/memorize-middleware.svg?style=flat
-
 [travis-url]: https://travis-ci.org/floatdrop/memorize-middleware
 [travis-image]: http://img.shields.io/travis/floatdrop/memorize-middleware.svg?style=flat
-
-[depstat-url]: https://david-dm.org/floatdrop/memorize-middleware
-[depstat-image]: http://img.shields.io/david/floatdrop/memorize-middleware.svg?style=flat
