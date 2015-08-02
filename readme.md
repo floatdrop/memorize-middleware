@@ -38,30 +38,11 @@ Middleware, which changes should be cached.
 
 #### options
 
-##### hotStart
-Type: `Boolean`  
-Default: `false`
-
-If enabled, middleware will be executed on startup, instead of be executed on first request.
-
 ##### updateInterval
 Type: `Number`  
 Default: `0` — never
 
 How often (in milliseconds) should `memorize` request new data for middleware. Don't make it too low.
-
-##### updateInterval
-Type: `Number`  
-Default: `5000`
-
-How soon (in milliseconds) should `memorize` retry request, if no data available yet. Don't make it too low.
-
-##### breakOnError
-Type: `Boolean`  
-Default: `false`
-
-Should client be notified (`next` callback called) when error is occured, while updating cache.
-Otherwise errors will be ignored and `memorize` will try to update cache again.
 
 ## License
 

@@ -27,7 +27,8 @@
     "mocha": "^2.2.5"
   },
   "dependencies": {
-    "object-assign": "^3.0.0"
+    "object-assign": "^3.0.0",
+    "pinkie-promise": "^1.0.0"
   },
   "eslintConfig": {
     "extends": "xo"
