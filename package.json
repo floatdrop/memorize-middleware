@@ -1,6 +1,6 @@
 {
   "name": "memorize-middleware",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Cache req changes and apply them later",
   "main": "index.js",
   "scripts": {
