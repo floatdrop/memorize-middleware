@@ -25,6 +25,16 @@ app.get('/', function (req, res, next) {
 app.listen(8080);
 ```
 
+### States
+
+There are couple states in which `memorize` works:
+
+1. __There is no cache__ - all requests will be halted, while result is pending.
+2. __Middleware failed and there is no cached value__ - Error will be passed to next middleware.
+3. __Result recieved__ - It will be stored, all pending clients will get result, all next clients will get. this result instantly. If `updateInterval` set - it will be scheduled.
+4. __Result not recieved in update time__ - Nothing will happen, all clients will recieve previous version, new update will be scheduled.
+5. __Result recieved in update time__ - Previous result will be swapped with new one.
+
 ## API
 
 ### memorize([options], middleware)
