@@ -70,3 +70,25 @@ it('should pass error', function (done) {
 		done();
 	});
 });
+
+it('should not clear cache on error', function (done) {
+	var i = 0;
+	var cached = memorize(function (req, res, next) {
+		if (i > 1) {
+			next(new Error('Oh noez!'));
+			return;
+		}
+		i++;
+		req.boop = 'yes';
+		next();
+	});
+
+	var req = {};
+	cached(req, {}, function () {
+		assert.equal(req.boop, 'yes');
+		cached(req, {}, function () {
+			assert.equal(req.boop, 'yes');
+			done();
+		});
+	});
+});
