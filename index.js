@@ -36,7 +36,7 @@ module.exports = function (middleware, opts) {
 	}
 
 	var cache = middlewarePromise();
-	
+
 	cache.catch(nop);
 
 	function updateLoop() {
