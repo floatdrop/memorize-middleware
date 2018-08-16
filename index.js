@@ -2,9 +2,6 @@
 
 function nop() {}
 
-var assign = require('object-assign');
-var PinkiePromise = require('pinkie-promise');
-
 module.exports = function (middleware, opts) {
 	if (typeof middleware !== 'function') {
 		throw new Error('middleware should be a function, not an ' + typeof middleware);
@@ -15,7 +12,7 @@ module.exports = function (middleware, opts) {
 	var updateInterval = opts.updateInterval;
 
 	var middlewarePromise = function () {
-		return new PinkiePromise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			var req = {};
 
 			middleware(req, {}, function (err) {
@@ -55,7 +52,7 @@ module.exports = function (middleware, opts) {
 
 		cache
 			.then(function (data) {
-				assign(req, data);
+				Object.assign(req, data);
 				return next();
 			})
 			.catch(next);
