@@ -92,3 +92,22 @@ it('should not clear cache on error', function (done) {
 		});
 	});
 });
+
+/**
+ * Unhandle promise rejections are not handled by mocha so far,
+ * so we have to look at the stderr
+ *
+ * @see https://github.com/mochajs/mocha/issues/2640#issuecomment-409656138
+ */
+it('should not emit unhandled promise rejection', function (done) {
+	var cached = memorize(function (req, res, next) {
+		next(new Error('Oh noez!'));
+	});
+
+	setImmediate(function () {
+		cached({}, {}, function (err) {
+			assert.equal(err.message, 'Oh noez!');
+			done();
+		});
+	});
+});
