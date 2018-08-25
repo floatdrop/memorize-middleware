@@ -23,7 +23,6 @@
   "homepage": "https://github.com/floatdrop/memorize-middleware",
   "devDependencies": {
     "ava": "^0.25.0",
-    "mocha": "^2.2.5",
     "xo": "^0.22.0"
   }
 }
