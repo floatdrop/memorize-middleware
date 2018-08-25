@@ -4,7 +4,7 @@
   "description": "Cache req changes and apply them later",
   "main": "index.js",
   "scripts": {
-    "test": "eslint . && mocha -R spec"
+    "test": "xo && ava"
   },
   "repository": {
     "type": "git",
@@ -22,11 +22,8 @@
   },
   "homepage": "https://github.com/floatdrop/memorize-middleware",
   "devDependencies": {
-    "eslint": "^1.0.0",
-    "eslint-config-xo": "^0.1.0",
-    "mocha": "^2.2.5"
-  },
-  "eslintConfig": {
-    "extends": "xo"
+    "ava": "^0.25.0",
+    "mocha": "^2.2.5",
+    "xo": "^0.22.0"
   }
 }

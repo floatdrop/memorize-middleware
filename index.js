@@ -4,18 +4,18 @@ function nop() {}
 
 module.exports = function (middleware, opts) {
 	if (typeof middleware !== 'function') {
-		throw new Error('middleware should be a function, not an ' + typeof middleware);
+		throw new TypeError('middleware should be a function, not an ' + typeof middleware);
 	}
 
 	opts = opts || {};
 
-	var updateInterval = opts.updateInterval;
+	const {updateInterval} = opts;
 
-	var middlewarePromise = function () {
-		return new Promise(function (resolve, reject) {
-			var req = {};
+	const middlewarePromise = function () {
+		return new Promise(((resolve, reject) => {
+			const req = {};
 
-			middleware(req, {}, function (err) {
+			middleware(req, {}, err => {
 				if (err) {
 					reject(err);
 					return;
@@ -23,7 +23,7 @@ module.exports = function (middleware, opts) {
 
 				resolve(req);
 			});
-		});
+		}));
 	};
 
 	function setupUpdate() {
@@ -32,14 +32,14 @@ module.exports = function (middleware, opts) {
 		}
 	}
 
-	var cache = middlewarePromise();
+	let cache = middlewarePromise();
 
 	cache.catch(nop);
 
 	function updateLoop() {
-		var promise = middlewarePromise();
+		const promise = middlewarePromise();
 		promise
-			.then(function () {
+			.then(() => {
 				cache = promise;
 				setupUpdate();
 			}, setupUpdate);
@@ -47,14 +47,16 @@ module.exports = function (middleware, opts) {
 
 	setupUpdate();
 
-	return function memorize(req, res, next) {
+	function memorize(req, res, next) {
 		next = next || nop;
 
 		cache
-			.then(function (data) {
+			.then(data => {
 				Object.assign(req, data);
 				return next();
 			})
 			.catch(next);
-	};
+	}
+
+	return memorize;
 };

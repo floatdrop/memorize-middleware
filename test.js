@@ -1,24 +1,20 @@
-/* global it */
+import test from 'ava';
+import memorize from '.';
 
-'use strict';
-
-var memorize = require('./');
-var assert = require('assert');
-
-it('should throw on invalid middleware', function () {
-	assert.throws(function () {
+test('should throw on invalid middleware', t => {
+	t.throws(() => {
 		memorize();
 	});
 
-	assert.throws(function () {
+	t.throws(() => {
 		memorize('wow');
 	});
 });
 
-it('should call middleware only once', function () {
-	var calls = 0;
+test('should call middleware only once', t => {
+	let calls = 0;
 
-	var cached = memorize(function (req, res, next) {
+	const cached = memorize((req, res, next) => {
 		calls++;
 		next();
 	});
@@ -26,26 +22,27 @@ it('should call middleware only once', function () {
 	cached({});
 	cached({});
 
-	assert.equal(calls, 1);
+	t.is(calls, 1);
 });
 
-it('should cache changes and apply them', function () {
-	var req = {};
+test.cb('should cache changes and apply them', t => {
+	const req = {};
 
-	var cached = memorize(function (req, res, next) {
+	const cached = memorize((req, res, next) => {
 		req.boop = true;
 		next();
 	});
 
-	cached(req, {}, function () {
-		assert.ok(req.boop);
+	cached(req, {}, () => {
+		t.true(req.boop);
+		t.end();
 	});
 });
 
-it('should clear cache on updateInterval', function (done) {
-	var calls = 0;
+test.cb('should clear cache on updateInterval', t => {
+	let calls = 0;
 
-	var cached = memorize(function (req, res, next) {
+	const cached = memorize((req, res, next) => {
 		calls++;
 		next();
 	}, {
@@ -53,27 +50,27 @@ it('should clear cache on updateInterval', function (done) {
 	});
 
 	cached({});
-	setTimeout(function () {
+	setTimeout(() => {
 		cached({});
-		assert.equal(calls, 2);
-		done();
+		t.is(calls, 2);
+		t.end();
 	}, 150);
 });
 
-it('should pass error', function (done) {
-	var cached = memorize(function (req, res, next) {
+test.cb('should pass error', t => {
+	const cached = memorize((req, res, next) => {
 		next(new Error('Oh noez!'));
 	});
 
-	cached({}, {}, function (err) {
-		assert.equal(err.message, 'Oh noez!');
-		done();
+	cached({}, {}, err => {
+		t.is(err.message, 'Oh noez!');
+		t.end();
 	});
 });
 
-it('should not clear cache on error', function (done) {
-	var i = 0;
-	var cached = memorize(function (req, res, next) {
+test.cb('should not clear cache on error', t => {
+	let i = 0;
+	const cached = memorize((req, res, next) => {
 		if (i > 1) {
 			next(new Error('Oh noez!'));
 			return;
@@ -83,12 +80,12 @@ it('should not clear cache on error', function (done) {
 		next();
 	});
 
-	var req = {};
-	cached(req, {}, function () {
-		assert.equal(req.boop, 'yes');
-		cached(req, {}, function () {
-			assert.equal(req.boop, 'yes');
-			done();
+	const req = {};
+	cached(req, {}, () => {
+		t.is(req.boop, 'yes');
+		cached(req, {}, () => {
+			t.is(req.boop, 'yes');
+			t.end();
 		});
 	});
 });
@@ -99,15 +96,15 @@ it('should not clear cache on error', function (done) {
  *
  * @see https://github.com/mochajs/mocha/issues/2640#issuecomment-409656138
  */
-it('should not emit unhandled promise rejection', function (done) {
-	var cached = memorize(function (req, res, next) {
+test.cb('should not emit unhandled promise rejection', t => {
+	const cached = memorize((req, res, next) => {
 		next(new Error('Oh noez!'));
 	});
 
-	setImmediate(function () {
-		cached({}, {}, function (err) {
-			assert.equal(err.message, 'Oh noez!');
-			done();
+	setImmediate(() => {
+		cached({}, {}, err => {
+			t.is(err.message, 'Oh noez!');
+			t.end();
 		});
 	});
 });
